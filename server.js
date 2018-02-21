@@ -15,7 +15,7 @@ var methodOverride = require('method-override');
 //config
 
 // mongoose.connect('mongodb:/node:username@mongo.onmodulus.net:27017/uw03mypu');
-mongoose.connect('mongodb://localhost/todo');
+mongoose.connect('mongodb://localhost');
 
 //set static files location
 app.use(express.static(__dirname + '/public'));
