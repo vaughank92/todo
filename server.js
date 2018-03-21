@@ -12,10 +12,9 @@ var bodyParser = require('body-parser');
 //simulate delete and put
 var methodOverride = require('method-override');
 
-//config
-
-// mongoose.connect('mongodb:/node:username@mongo.onmodulus.net:27017/uw03mypu');
-mongoose.connect('mongodb://localhost');
+//config load
+var database = require('./config/database');
+mongoose.connect(database.url);
 
 //set static files location
 app.use(express.static(__dirname + '/public'));
@@ -29,73 +28,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 app.use(methodOverride());
 
+//load the routes
+require('./app/routes')(app);
+
 //listen (start app with node server.js)
 app.listen(8080);
-
 console.log("App listening at port 8080");
-
-//model
-
-var Todo = mongoose.model('Todo', {
-	text : String
-});
-
-//routes
-
-//api
-//get all todos
-app.get('/api/todos', function(req, res) {
-	//mongoose gets all the todos
-	Todo.find(function(err, todos) {
-		if(err)
-			res.send(err);
-		res.json(todos);
-	});
-});
-
-//create todo and send back all todos after creation
-app.post('/api/todos', function(req, res) {
-	//create todo
-	Todo.create({
-		text : req.body.text,
-		done : false
-	}, function(err, todo) {
-		if(err)
-			res.send(err);
-
-		//get and return all todos
-		Todo.find(function(err, todos) {
-			if(err)
-				res.send(err)
-			res.json(todos);
-		});
-	});
-});
-
-//delete
-app.delete('/api/todos/:todo_id', function(req, res) {
-	Todo.remove({
-		_id : req.params.todo_id
-	}, function(err, todo) {
-		if(err)
-			res.send(err);
-
-		//get and return all todos
-		Todo.find(function(err, todos) {
-			if(err)
-				res.send(err)
-			res.json(todos);
-		});
-	});
-});
-
-
-//application
-app.get('*', function(req, res) {
-	res.sendfile('./public/index.html');
-});
-
-
-
-
-
